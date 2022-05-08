@@ -14,8 +14,8 @@ const colors = [
         blue: 0,
     },
     {
-        red: 0,
-        green: 0,
+        red: 50,
+        green: 100,
         blue: 255,
     },
     {
