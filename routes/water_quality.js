@@ -5,6 +5,8 @@ const { query }                 = require('express-validator');
 const express                   = require('express')
 const router                    = express.Router()
 
+const validator                 = require('../middleware/validator');
+
 // Grab only the readings from the last 24 hours by default
 const getWaterQualityReadings = async(hoursBack = 24, sort = {}, limit = null) => {
     if(!sort.timestamp)
@@ -22,7 +24,7 @@ const getWaterQualityReadings = async(hoursBack = 24, sort = {}, limit = null) =
     return wq_list;
 }
 
-router.get("/API/v1/water_quality", query('hours').toInt(), async (req, res) => {
+router.get("/API/v1/water_quality", query('hours').toInt(), query('hours').isInt({gt: 0}), validator.ValidationHandler, async (req, res) => {
     try {
         const queryHours = req.query?.hours || 24;
         const wq_list = await getWaterQualityReadings(queryHours);
@@ -32,7 +34,7 @@ router.get("/API/v1/water_quality", query('hours').toInt(), async (req, res) => 
     }
 });
 
-router.get("/API/v1/water_quality/average", query('hours').toInt(), async (req, res) => {
+router.get("/API/v1/water_quality/average", query('hours').toInt(), query('hours').isInt({gt: 0}), validator.ValidationHandler, async (req, res) => {
     try {
         const queryHours = req.query?.hours || 24;
         const wq_list = await getWaterQualityReadings(queryHours);
@@ -48,7 +50,7 @@ router.get("/API/v1/water_quality/average", query('hours').toInt(), async (req, 
     }
 });
 
-router.get("/API/v1/water_quality/min", query('hours').toInt(), async (req, res) => {
+router.get("/API/v1/water_quality/min", query('hours').toInt(), query('hours').isInt({gt: 0}), validator.ValidationHandler, async (req, res) => {
     try {
         const queryHours = req.query?.hours || 24;
         const wq_reading = await getWaterQualityReadings(queryHours, {water_temperature: 1}, 1);
@@ -60,7 +62,7 @@ router.get("/API/v1/water_quality/min", query('hours').toInt(), async (req, res)
     }
 });
 
-router.get("/API/v1/water_quality/max", query('hours').toInt(), async (req, res) => {
+router.get("/API/v1/water_quality/max", query('hours').toInt(), query('hours').isInt({gt: 0}), validator.ValidationHandler, async (req, res) => {
     try {
         const queryHours = req.query?.hours || 24;
         const wq_reading = await getWaterQualityReadings(queryHours, {water_temperature: -1}, 1);

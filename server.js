@@ -28,10 +28,12 @@ const server = http.createServer(app); // Attach Express to HTTP server
 require('./broker')(server);
 
 // Example publishers - Publishing random data through MQTT
-require('./publisher')("Bayside Beach", true);
-require('./publisher')("Paradise Bay", true);
-require('./publisher')("Sandy Shores", true);
-require('./publisher')("Glass Beach", true);
+if(!env === "development") {
+    require('./publisher')("Bayside Beach", true);
+    require('./publisher')("Paradise Bay", true);
+    require('./publisher')("Sandy Shores", true);
+    require('./publisher')("Glass Beach", true);
+}
 
 // Init endpoints for API
 app.use(require('./routes/water_quality'));
