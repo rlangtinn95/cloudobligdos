@@ -28,7 +28,7 @@ const server = http.createServer(app); // Attach Express to HTTP server
 require('./broker')(server);
 
 // Example publishers - Publishing random data through MQTT
-if(!env === "development") {
+if(env !== "development") {
     require('./publisher')("Bayside Beach", true);
     require('./publisher')("Paradise Bay", true);
     require('./publisher')("Sandy Shores", true);
