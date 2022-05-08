@@ -45,7 +45,7 @@ module.exports = (httpServer) => {
 
                 const parsedWQ = JSON.parse(packet.payload.toString());
 
-                console.log(`New reading: ${parsedWQ}`);
+                console.log(`New reading from ${parsedWQ?.location} - ${parsedWQ?.water_temperature} Celsius`);
 
                 const wq = new water_quality_model(parsedWQ);
                 wq.save();
