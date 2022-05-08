@@ -1,10 +1,14 @@
-const express               = require('express');
-const bodyParser            = require('body-parser');
-const app                   = express();
-const compression           = require('compression');
-const DBI                   = require('./db/db');
-const port                  = process.env.PORT || 80;
-const water_quality_model   = require('./db/models/water_quality');
+const express                   = require('express');
+const bodyParser                = require('body-parser');
+const app                       = express();
+const compression               = require('compression');
+const DBI                       = require('./db/db');
+const port                      = process.env.PORT || 80;
+const water_quality_model       = require('./db/models/water_quality');
+const { buildSanitizeFunction } = require('express-validator');
+
+// Build a sanitization function for req.query to clear harmful payload
+const sanitizeQuery = buildSanitizeFunction(['query']);
 
 // Setup dev environment if in "development"
 const env = process.env.NODE_ENV || "development";
@@ -12,11 +16,11 @@ const env = process.env.NODE_ENV || "development";
 if(env === "development")
     require('dotenv').config();
 
-//app.use(bodyParser.urlencoded({extended: true}));
-const jsonParser = bodyParser.json()
+app.use(bodyParser.urlencoded({extended: true}));
 
 // Allow cross-origin
 const cors = require('cors');
+const { roundDecimals } = require('./utils');
 app.use(cors());
 
 // Compress all packets from server
@@ -29,19 +33,17 @@ DBI.initConnection();
 require('./broker');
 
 // Example publishers - Publishing random data through MQTT
-//require('./publisher')("Bayside Beach", true);
-//require('./publisher')("Paradise Bay", true);
-//require('./publisher')("Sandy Shores", true);
-//require('./publisher')("Glass Beach", true);
+require('./publisher')("Bayside Beach", true);
+require('./publisher')("Paradise Bay", true);
+require('./publisher')("Sandy Shores", true);
+require('./publisher')("Glass Beach", true);
 
 // Serve static webpages using Express
 app.use(express.static('public'));
 
 // Endpoint for retrieving water_quality readings
-// Grab only the readings from the last 24 hours
-
+// Grab only the readings from the last 24 hours by default
 const getWaterQualityReadings = async(hoursBack = 24, sort = {}, limit = null) => {
-
     if(!sort.timestamp)
         sort.timestamp = 1;
 
@@ -57,7 +59,7 @@ const getWaterQualityReadings = async(hoursBack = 24, sort = {}, limit = null) =
     return wq_list;
 }
 
-app.get("/API/v1/water_quality", async (req, res) => {
+app.get("/API/v1/water_quality", sanitizeQuery('hours').toInt(), async (req, res) => {
     try {
         const queryHours = req.query?.hours || 24;
         const wq_list = await getWaterQualityReadings(queryHours);
@@ -67,7 +69,7 @@ app.get("/API/v1/water_quality", async (req, res) => {
     }
 });
 
-app.get("/API/v1/water_quality/average", async (req, res) => {
+app.get("/API/v1/water_quality/average", sanitizeQuery('hours').toInt(), async (req, res) => {
     try {
         const queryHours = req.query?.hours || 24;
         const wq_list = await getWaterQualityReadings(queryHours);
@@ -77,14 +79,13 @@ app.get("/API/v1/water_quality/average", async (req, res) => {
             total += item.water_temperature; // Add temp to total
         });
 
-        res.status(200).send({data: Math.round((total/wq_list.length) * 100) / 100});   // Divide total by list length to get average, also *100 and remove decimals
-                                                                                        // then divide by 100 again to get 2 back
+        res.status(200).send({data: roundDecimals(total/wq_list.length, 2)});   // Divide total by list length to get average
     } catch(error) {
         res.status(500).send({error: error});
     }
 });
 
-app.get("/API/v1/water_quality/min", async (req, res) => {
+app.get("/API/v1/water_quality/min", sanitizeQuery('hours').toInt(), async (req, res) => {
     try {
         const queryHours = req.query?.hours || 24;
         const wq_reading = await getWaterQualityReadings(queryHours, {water_temperature: 1}, 1);
@@ -96,7 +97,7 @@ app.get("/API/v1/water_quality/min", async (req, res) => {
     }
 });
 
-app.get("/API/v1/water_quality/max", async (req, res) => {
+app.get("/API/v1/water_quality/max", sanitizeQuery('hours').toInt(), async (req, res) => {
     try {
         const queryHours = req.query?.hours || 24;
         const wq_reading = await getWaterQualityReadings(queryHours, {water_temperature: -1}, 1);

@@ -10,14 +10,15 @@ DBI.initConnection();
 
 const user_model = require('./db/models/user');
 const water_quality_model = require('./db/models/water_quality');
+const { roundDecimals } = require('./utils');
 
 server.listen(port, () => {
   console.log('MQTT broker is listening on port', port)
 });
 
-////////////////////////////////////////////////////////////////////////////
-// All of these listeners are useless as of now, but useful for debugging //
-aedes.on('client', (client) => {
+////////////////////////////////////////////////////////////////////////////////
+// All of these listeners are useless in production, but useful for debugging //
+/*aedes.on('client', (client) => {
     console.log(`[CONNECT] Client ${client?.id} connected`);
 });
 
@@ -31,11 +32,11 @@ aedes.on('subscribe', (subscriptions, client) => {
 
 aedes.on('unsubscribe', (subscriptions, client) => {
     console.log(`[SUBSCRIBE] Client ${client?.id} unsubscribed from topics: ${subscriptions.map(s=>s.topic).join(',')}`);
-});
-////////////////////////////////////////////////////////////////////////////
+});*/
+////////////////////////////////////////////////////////////////////////////////
 
 aedes.on('publish', (packet, client) => {
-    if(!client?.id) // Filter all system messages
+    if(!client?.id) // Filter out all system messages
         return;
 
     if(packet.topic === "water_quality") {
@@ -74,29 +75,49 @@ const EXITestTopic = 'data_format_test_exi';
 const JSONTestTopic = 'data_format_test_json';
 
 aedes.on('publish', async (packet, client) => {
+    var payload = {
+        dataSize: Buffer.byteLength(packet.payload)
+    };
+    
     if(packet.topic === CBORTestTopic) {
         const jObj = await cbor.decodeAll(packet.payload);
+
+        if(!jObj)
+            payload.error = "Failed parsing CBOR";
+
         aedes.publish({
             topic: CBORTestTopic+"_response",
-            payload: `${Buffer.byteLength(packet.payload)}`
+            payload: JSON.stringify(payload)
         });
     } else if(packet.topic === XMLTestTopic) {
         const jObj = await xml2js.parseStringPromise(packet.payload);
+
+        if(!jObj)
+            payload.error = "Failed parsing XML";
+
         aedes.publish({
             topic: XMLTestTopic+"_response",
-            payload: `${Buffer.byteLength(packet.payload)}`
+            payload: JSON.stringify(payload)
         });
     } else if(packet.topic === EXITestTopic) {
-        //const jObj = await xml2js.parseStringPromise(packet.payload);
+        const jObj = await xml2js.parseStringPromise(packet.payload, {strict: false});
+
+        if(!jObj)
+            payload.error = "Failed parsing EXI";
+
         aedes.publish({
             topic: EXITestTopic+"_response",
-            payload: `${Buffer.byteLength(packet.payload)}`
+            payload: JSON.stringify(payload)
         });
     } else if(packet.topic === JSONTestTopic) {
         const jObj = await JSON.parse(packet.payload);
+
+        if(!jObj)
+            payload.error = "Failed parsing JSON";
+
         aedes.publish({
             topic: JSONTestTopic+"_response",
-            payload: `${Buffer.byteLength(packet.payload)}`
+            payload: JSON.stringify(payload)
         });
     }
 });
