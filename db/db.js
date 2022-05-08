@@ -26,7 +26,7 @@ class DB {
 class DBI {
     static DBInterface;
     static getInterface() {
-        if(!this.DBInterface)
+        if(!this.DBInterface || !mongoose.connection.readyState)
             this.DBInterface = new DB();
 
         return this.DBInterface;
