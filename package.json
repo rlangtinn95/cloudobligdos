@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "start nodemon . && start npm run scss",
+    "scss": "sass --watch styles/styles.scss public/styles.css"
   },
   "author": "Richard Langtinn and Ola Hulleberg",
   "license": "ISC",
@@ -25,6 +26,7 @@
     "net": "^1.0.2",
     "node-cron": "^3.0.0",
     "nodemon": "^2.0.16",
+    "sass": "^1.51.0",
     "xml2js": "^0.4.23"
   }
 }
