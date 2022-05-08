@@ -45,6 +45,8 @@ body {
         flex: 0 1 auto;
         background-color: var(--card-bg-color);
 
+        border-bottom: 1px solid black;
+
         a {
             color: var(--card-text-color);
             text-decoration: none;
@@ -87,6 +89,10 @@ body {
         margin: 0.2rem;
     }
 
+    p.footnote {
+        font-size: 0.9rem;
+    }
+
     li p:first-of-type {
         font-weight: bold;
     }
@@ -102,6 +108,16 @@ body {
         max-height: 88%;
 
         border-radius: 10px;
+    }
+
+    .footer {
+        background-color: var(--card-bg-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 4vh;
+        border-top: 1px solid black;
     }
 }
 
