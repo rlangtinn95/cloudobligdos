@@ -41,7 +41,11 @@ const water_chart = new Chart(water_chart_ctx, {
                     display: true
                 },
                 min: 0,
-                max: dataHours
+                max: dataHours,
+                grid: {
+                    borderColor: "white",
+                    color: "rgba(255, 255, 255, 0.1)"
+                }
             },
             y: {
                 title: {
@@ -49,11 +53,17 @@ const water_chart = new Chart(water_chart_ctx, {
                     display: true
                 },
                 min: 0,
-                max: 20
+                max: 20,
+                grid: {
+                    borderColor: "white",
+                    color: "rgba(255, 255, 255, 0.1)"
+                }
             }
         }
     }
 });
+
+Chart.defaults.color = "white";
 
 var wq_list;
 
