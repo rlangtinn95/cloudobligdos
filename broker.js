@@ -44,6 +44,9 @@ module.exports = (httpServer) => {
                 DBI.initConnection(); // Check if DB is alive, if not: reconnect
 
                 const parsedWQ = JSON.parse(packet.payload.toString());
+
+                console.log(`New reading: ${parsedWQ}`);
+
                 const wq = new water_quality_model(parsedWQ);
                 wq.save();
             } catch (error) {
