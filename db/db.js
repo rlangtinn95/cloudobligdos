@@ -1,5 +1,11 @@
 const mongoose = require('mongoose');
 
+// Setup dev environment if in "development"
+const env = process.env.NODE_ENV || "development";
+
+if(env === "development")
+    require('dotenv').config();
+
 const IP        = process.env.MONGODB_IP;
 const dbName    = process.env.MONGODB_DB;
 const user      = process.env.MONGODB_USER;

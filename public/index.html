@@ -5,9 +5,38 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>IDG 2001 Cloud - Oblig2</title>
-        <script src="script.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"
+            integrity="sha512-QSkVNOCYLtj73J4hbmVoOV6KVZuMluZlioC+trLpewV8qMjsWqlIQvkn1KGX2StWvPMdWGBqim1xlC8krl1EKQ=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"></script>
+        <link rel="stylesheet" href="styles.css">
     </head>
     <body>
-        Nothing here for now ...
+        <div class="container">
+            <div>
+                <h1>Stats</h1>
+                <ul class="stats">
+                    <li>
+                        <p>Average:</p>
+                        <p id="wq_average">0</p>
+                    </li>
+
+                    <li>
+                        <p>Minima:</p>
+                        <p id="wq_min">0</p>
+                    </li>
+
+                    <li>
+                        <p>Maxima:</p>
+                        <p id="wq_max">0</p>
+                    </li>
+                </ul>
+            </div>
+            <div class="graph-container">
+                <h2>Temperature last 24 hours (Celsius)</h2>
+                <canvas id="water_chart"></canvas>
+            </div>
+            <script src="script.js" type="module"></script>
+        </div>
     </body>
 </html>
