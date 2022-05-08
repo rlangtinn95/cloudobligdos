@@ -40,6 +40,8 @@ aedes.on('publish', (packet, client) => {
 
     if(packet.topic === "water_quality") {
         try {
+            DBI.initConnection(); // Check if DB is alive, if not: reconnect
+
             const parsedWQ = JSON.parse(packet.payload.toString());
             const wq = new water_quality_model(parsedWQ);
             wq.save();
