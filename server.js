@@ -41,6 +41,11 @@ app.use(require('./routes/water_quality'));
 // Serve static webpages using Express
 app.use(express.static('public'));
 
+// Last middleware to run : 404 - Not Found
+app.use(function(req,res){
+    res.status(404).send("404 - Page not found");
+});
+
 // Open listening port for Express
 server.listen(port, () => {
       console.log(`Webserver started on port ${port}`);
