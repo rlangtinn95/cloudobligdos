@@ -129,13 +129,18 @@ function renderGraph() {
             };
             i++;
         }
-
-        const timestampLabel = new Date(wq_reading.timestamp).toLocaleString('no-nb', {hour12: false, hour: '2-digit', minute: '2-digit'});
-        if(!label_res.includes(timestampLabel))
-            label_res.push(timestampLabel);
-
+            
         res[wq_reading.location].data.push(wq_reading.water_temperature);
     });
+
+    i = dataHours;
+    const dateNow = new Date();
+    dateNow.setMinutes(0,0,0);
+    while(i >= 0) {
+        const timestampLabel = new Date(dateNow-(1000*60*60*i)).toLocaleString('no-nb', {hour12: false, hour: '2-digit', minute: '2-digit'});
+        label_res.push(timestampLabel);
+        i--;
+    }
 
     water_chart.data.labels = label_res;
     water_chart.data.datasets = Object.values(res);

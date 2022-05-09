@@ -12,11 +12,20 @@ const getWaterQualityReadings = async(hoursBack = 24, sort = {}, limit = null) =
     if(!sort.timestamp)
         sort.timestamp = 1;
 
+    // Date basis - now
     const DateNow = new Date();
+    DateNow.setMinutes(1,0,0);  // Set date limit to 1 minute over last hour to account for millisecond and second differences.
+                                // Retrieves data posted BEFORE this
+
+    // Search date limit (back in time)
     const hoursInMilliseconds = 60*1000*60*hoursBack;
+    const searchDate = new Date(DateNow-hoursInMilliseconds);
+    searchDate.setMinutes(0,0,0); // Set date limit to exactly 0 minutes, 0 seconds and 0 milliseconds to get every data submitted AFTER this
+
+    // DB search
     const wq_list = await water_quality_model.find({
         timestamp: {
-            $gte: new Date(DateNow-hoursInMilliseconds),
+            $gte: searchDate,
             $lte: DateNow // Prevent future data from being displayed
         }
     }).sort(sort).limit(limit); // Sort most recent readings first
