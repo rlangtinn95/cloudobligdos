@@ -1,6 +1,5 @@
 const mqtt = require('mqtt');
 const fs = require('fs');
-const xml2js = require('xml2js');
 const cron = require('node-cron');
 const Utils = require('./utils');
 
