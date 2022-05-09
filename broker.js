@@ -1,7 +1,6 @@
 const aedes = require('aedes')();
 const cbor = require('cbor');
 const xml2js = require('xml2js');
-const port = 2021;
 const DBI = require('./db/db');
 const ws = require('websocket-stream');
 
